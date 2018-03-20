@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="font-awesome/css/font-awesome.css" />
+    <style>
+        body{
+            margin: 0px;padding: 0px;
+            width: 100%;
+            height: 100%;
+            background: black;
+        }
+        canvas {
+            background: white;
+            position: fixed;
+            top:0px;
+            bottom: 100%;
+            left: 0px;
+            right: 100%;
+        }
+        #overlay{
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            font-size: 30px;
+        }
+        #mySidenav{
+            position: fixed;
+            top: 0px;
+            right: 0px;
+            font-size: 30px;
+            background: blue;
+            width: 0px;
+            height: 100%;
+        }
+        nav a {
+            text-decoration: none;
+            color: white;
+        }
+        nav ul li{
+            list-style: none;
+        }
+        #thumbstick{
+            bottom:50px;
+            left: 50px;
+            position: fixed;
+            width: 10%;
+        }
+        #icon2{
+            position: fixed;
+            bottom:50px;
+            right: 50px;
+        }
+        button{
+            display: block;
+            background: #2b2929;
+            background: -webkit-radial-gradient(center,#2b2929,#000000);
+            background: -o-radial-gradient(center,#2b2929,#000000);
+            background: -moz-radial-gradient(center,#2b2929,#000000);
+            background: radial-gradient(ellipse at center, #2b2929, #000000);
+
+            border: 3px outset;
+            margin: 36px;
+            text-align: center;
+            line-height: 144px;
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+        }
+        button:active{
+            border: 3px inset;
+        }
+    </style>
+    <script>
+        function toggleNav(){
+            if(document.getElementById("mySidenav").style.width == "0px"){
+                document.getElementById("mySidenav").style.width = "200px";
+                document.getElementById("overlay").style.right = "210px";
+                document.getElementById("canvas").setAttribute("width",window.innerWidth - 200);
+            } else {
+                document.getElementById("mySidenav").style.width = "0px";
+                document.getElementById("overlay").style.right = "10px";
+                document.getElementById("canvas").setAttribute("width",window.innerWidth);
+            }
+        }
+        
+        function touchEvent(e){
+            e.preventDefault();
+            for(var i = 0; i< e.changedTouches.length; i++){
+                var touchobj = e.changedTouches[0];
+                var thumb = document.getElementById("thumbstick");
+                var rect = canvas.getBoundingClientRect();
+                var x = parseInt(touchobj.clientX) - rect.left - thumb.clientWidth/2;
+                var y = window.innerHeight-parseInt(touchobj.clientY) - rect.top - thumb.clientHeight/2;
+                if(x<window.innerWidth/2){
+                    thumb.style.left = x+"px";
+                    thumb.style.bottom = y+"px";
+                }
+            }
+        }
+        
+        function touchEvent2(e){
+            e.preventDefault();
+            for(var i = 0; i< e.changedTouches.length; i++){
+                var touchobj2 = e.changedTouches[i];
+                var thumb2 = document.getElementById("icon1");
+                var rect2 = canvas.getBoundingClientRect();
+                var x2 = parseInt(touchobj2.clientX) - rect2.left - thumb2.clientWidth/2;
+                var y2 = window.innerHeight-parseInt(touchobj2.clientY) - rect2.top - thumb2.clientHeight/2;
+                if(x2>window.innerWidth/2){
+                    thumb2.style.left = x2+"px";
+                    thumb2.style.bottom = y2+"px";
+                }
+                
+            }
+            
+        }
+        
+        function touchStop(e){
+            var thumb = document.getElementById("thumbstick");
+             thumb.style.left = "50px";
+             thumb.style.bottom = "50px";
+        }
+    </script>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="overlay"><i onclick="toggleNav()" class="fa fa-bars" aria-hidden="true"></i></div>
+    <div id="mySidenav" width="0px">
+        <nav>
+            <ul>
+                <li><a href="#">Character</a></li>
+                <li><a href="#">Inventory</a></li>
+                <li><a href="#">Store</a></li>
+                <li><a href="#">Logout</a></li>
+            </ul>
+        
+        </nav>
+    </div>
+    <button id="thumbstick">
+    </button>
+    <button draggable="false" id="icon2">
+        <img src="sword.png" />
+    </button>
+    
+</body>
+    <script>
+    document.getElementById("canvas").setAttribute("width",window.innerWidth);
+    document.getElementById("canvas").setAttribute("height",window.innerHeight);
+    var canvas = document.getElementById('canvas');
+    if (canvas.getContext) {
+        var ctx = canvas.getContext('2d');
+    }
+    document.getElementById("thumbstick").addEventListener("touchstart", touchEvent, false);
+    document.getElementById("thumbstick").addEventListener("touchend", touchStop, false);
+    document.getElementById("thumbstick").addEventListener("touchmove", touchEvent, false);
+    document.getElementById("thumbstick").addEventListener("touchcancel", touchEvent, false);
+    
+        /*
+    document.getElementById("icon1").addEventListener("touchstart", touchEvent2, false);
+    document.getElementById("icon1").addEventListener("touchmove", touchEvent2, false);
+    document.getElementById("icon1").addEventListener("touchcancel", touchEvent2, false);    
+    
+    var ui = [];   
+    var rectangularButton = function button(x,y,width,height,event,border){
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.draw = function(ctx){
+            ctx.fillStyle="#FF0000";
+            ctx.fillRect(x,y,width,height);
+        }
+        this.event = event;
+        this.clickEvent = function(posX,posY){
+            var handleEvent = true;
+            if(posX < this.x){
+                handleEvent = false;
+            }
+            else if(posY < this.y){
+                handleEvent = false;
+            }
+            else if(posX > (this.x + this.width)){
+                handleEvent = false;
+            }
+            else if(posY > (this.y + this.height)){
+                handleEvent = false;
+            }
+            if(handleEvent){
+                this.event();
+            }
+        }
+    }
+    
+    function alerter(){
+        alert("test")
+    }
+
+    ui.push(new rectangularButton(25, 25, 100, 50,alerter,"1px solid black"));
+    ui[0].draw(ctx);
+        
+    function handleClick(e){
+        var rect = canvas.getBoundingClientRect();
+        var x = event.clientX - rect.left;
+        var y = event.clientY - rect.top;
+        console.log("x: " + x + " y: " + y);
+
+        for(var i = 0; i < ui.length; i++){
+            ui[i].clickEvent(x,y);
+        }
+    }
+    
+        
+    function redraw(){
+        for(var i = 0; i < ui.length; i++){
+            ui[i].draw(ctx);
+        }
+    }
+    canvas.addEventListener("click",handleClick);
+        
+        var X = canvas.width / 2;
+    var Y = canvas.height / 2;
+    var R = 45;
+    ctx.beginPath();
+    ctx.arc(X, Y, R, 0, 2 * Math.PI, false);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#FF0000';
+    ctx.stroke();
+    */
+    </script>
+</html>
